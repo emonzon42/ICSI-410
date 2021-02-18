@@ -59,6 +59,28 @@ public class Tuple implements java.io.Serializable {
 	}
 
 	/**
+	 * Constructs a {@code Tuple} from the specified {@code ObjectInputStream}.
+	 * 
+	 * @param schema
+	 *            a {@code RelationSchema}
+	 * @param in
+	 *            an {@code ObjectInputStream}
+	 * @throws TypeException
+	 *             if an attribute value does not match the type of the corresponding attribute
+	 * @throws IOException
+	 *             if an I/O error occurs
+	 * @throws ClassNotFoundException
+	 *             if the class of a serialized object cannot be found
+	 */
+	public Tuple(RelationSchema schema, ObjectInputStream in)
+			throws ClassNotFoundException, TypeException, IOException {
+		this.schema = schema;
+		attributeValues = new Object[schema.attributeTypes.length];
+		for (int i = 0; i < schema.attributeTypes.length; i++)
+			setAttribute(i, read(schema.attributeType(i), in));
+	}
+
+	/**
 	 * Returns the value of the specified attribute.
 	 * 
 	 * @param i
@@ -88,7 +110,12 @@ public class Tuple implements java.io.Serializable {
 	 *             if the specified object is not an instance of the type of the specified attribute
 	 */
 	public void setAttribute(int attributeIndex, Object o) throws TypeException {
-		// TODO complete this method
+		//System.err.println(o.getClass() + " | " + schema.attributeType(attributeIndex));
+		
+		if(o.getClass().equals(schema.attributeType(attributeIndex)))
+			attributeValues[attributeIndex] = o;
+		else
+			throw new TypeException();
 	}
 
 	/**
@@ -100,29 +127,9 @@ public class Tuple implements java.io.Serializable {
 	 *             if an IO error occurs
 	 */
 	public void writeAttributes(ObjectOutputStream out) throws IOException {
-		// TODO complete this method
-	}
-
-	/**
-	 * Constructs a {@code Tuple} from the specified {@code ObjectInputStream}.
-	 * 
-	 * @param schema
-	 *            a {@code RelationSchema}
-	 * @param in
-	 *            an {@code ObjectInputStream}
-	 * @throws TypeException
-	 *             if an attribute value does not match the type of the corresponding attribute
-	 * @throws IOException
-	 *             if an I/O error occurs
-	 * @throws ClassNotFoundException
-	 *             if the class of a serialized object cannot be found
-	 */
-	public Tuple(RelationSchema schema, ObjectInputStream in)
-			throws ClassNotFoundException, TypeException, IOException {
-		this.schema = schema;
-		attributeValues = new Object[schema.attributeTypes.length];
-		for (int i = 0; i < schema.attributeTypes.length; i++)
-			setAttribute(i, read(schema.attributeType(i), in));
+		for (int i = 0; i < attributeValues.length; i++) {
+			write(attributeValues[i], out);
+		}
 	}
 
 	/**
@@ -136,8 +143,12 @@ public class Tuple implements java.io.Serializable {
 	 *             if an I/O error occurs
 	 */
 	protected void write(Object o, ObjectOutputStream out) throws IOException {
-		// TODO complete this method
-		out.writeObject(o);
+		if(o.getClass().equals(Integer.class))
+			out.writeInt((Integer) o);
+		else if(o.getClass().equals(Double.class))
+			out.writeDouble((Double) o);
+		else
+			out.writeObject(o);
 	}
 
 	/**
@@ -154,8 +165,12 @@ public class Tuple implements java.io.Serializable {
 	 *             if the class of a serialized object cannot be found
 	 */
 	protected Object read(Class<?> type, ObjectInputStream in) throws IOException, ClassNotFoundException {
-		// TODO complete this method
-		return in.readObject();
+		if(type.equals(Integer.class))
+			return in.readInt();
+		else if(type.equals(Double.class))
+			return in.readDouble();
+		else
+			return in.readObject();
 	}
 
 }
