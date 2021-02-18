@@ -2,8 +2,11 @@ package hdb.data.relational;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.util.LinkedHashMap;
 
 /**
@@ -11,7 +14,7 @@ import java.util.LinkedHashMap;
  * 
  * @author Jeong-Hyon Hwang (jhh@cs.albany.edu)
  */
-public class RelationSchema {
+public class RelationSchema implements java.io.Serializable {
 
 	/**
 	 * An {@code InvalidRelationSchemaDefinition} is thrown if a {@code RelationSchema} is defined inappropriately.
@@ -78,8 +81,7 @@ public class RelationSchema {
 	 * @return the number of attributes in this {@code RelationSchema}
 	 */
 	public int size() {
-		// TODO complete this method
-		return 0;
+		return attributeNames.length;
 	}
 
 	/**
@@ -90,8 +92,7 @@ public class RelationSchema {
 	 * @return the name of the specified attribute
 	 */
 	public String attributeName(int attributeIndex) {
-		// TODO complete this method
-		return null;
+		return attributeNames[attributeIndex];
 	}
 
 	/**
@@ -102,8 +103,7 @@ public class RelationSchema {
 	 * @return the type of the specified attribute
 	 */
 	public Class<?> attributeType(int attributeIndex) {
-		// TODO complete this method
-		return null;
+		return attributeTypes[attributeIndex];
 	}
 
 	/**
@@ -114,7 +114,10 @@ public class RelationSchema {
 	 * @return the index of the specified attribute in this {@code RelationSchema}; {@code null} if no such attribute
 	 */
 	public Integer attributeIndex(String attributeName) {
-		// TODO complete this method
+
+		for (int i = 0; i < attributeNames.length; i++)
+			if (attributeNames[i] == attributeName) return i;
+
 		return null;
 	}
 
@@ -129,7 +132,9 @@ public class RelationSchema {
 	 *             if an IO error occurs
 	 */
 	public void save(String fileName) throws FileNotFoundException, IOException {
-		// TODO complete this method
+		ObjectOutputStream o = new ObjectOutputStream(new FileOutputStream(fileName));
+		o.writeObject(this);
+		o.close();
 	}
 
 	/**
