@@ -1,5 +1,6 @@
 package hdb.data.nonrelational;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map.Entry;
 
@@ -89,16 +90,48 @@ public class CollectionSchema implements java.io.Serializable {
 	}
 
 	/**
-	 * Returns the index of the specified attribute in this {@code CollectionSchema} ({@code null} if no such
-	 * attribute).
+	 * Returns the index of the specified attribute in this {@code CollectionSchema} (registers that attribute
+	 * if no such attribute has been registered in this {@code CollectionSchema}).
 	 * 
 	 * @param attributeName
 	 *            the name of an attribute
-	 * @return the index of the specified attribute in this {@code CollectionSchema}; {@code null} if no such attribute
+	 * @return the index of the specified attribute in this {@code CollectionSchema}
 	 */
 	public int[] attributeIndex(String attributeName) {
-		// TODO complete this method
-		return null;
+		if(attributeName.contains("."))
+			System.out.println(attributeName+" -> "+Arrays.toString(attributeName.split("\\.")));
+			
+		if (attributeName.contains(".") && name2index.get(attributeName.split("\\.")[0]) == null) {//creates attribute and subattributes
+			name2index.put(attributeName.split("\\.")[0], name2index.size());
+			index2name.put(name2index.get(attributeName.split("\\.")[0]), attributeName.split("\\.")[0]);
+			
+			CollectionSchema sub = new CollectionSchema();
+			sub.attributeIndex(attributeName.split("\\.")[1]);
+			index2schema.put(name2index.get(attributeName.split("\\.")[0]),sub);
+
+			return new int[] {name2index.get(attributeName.split("\\.")[0]), sub.name2index.get(attributeName.split("\\.")[1])};
+		} else if (attributeName.contains(".")){ //returns subattributes / creates new subattribute
+			System.out.println(name2index.get(attributeName.split("\\.")[0]));
+
+			//creates subattribute (and schema) if needed
+			if (index2schema.get(name2index.get(attributeName.split("\\.")[0])) != null){
+				subschema(name2index.get(attributeName.split("\\.")[0])).attributeIndex(attributeName.split("\\.")[1]);
+			} else{
+				CollectionSchema sub = new CollectionSchema();
+				sub.attributeIndex(attributeName.split("\\.")[1]);
+				index2schema.put(name2index.get(attributeName.split("\\.")[0]),sub);
+			}
+
+			return new int[] {name2index.get(attributeName.split("\\.")[0]), 
+							subschema(name2index.get(attributeName.split("\\.")[0])).name2index.get(attributeName.split("\\.")[1])};
+		}else if (name2index.get(attributeName) == null){ //creates attribute
+			name2index.put(attributeName, name2index.size());
+			index2name.put(name2index.get(attributeName), attributeName);
+			return new int [] {name2index.get(attributeName)};
+		}else{ // returns attribute
+			return new int [] {name2index.get(attributeName)};
+		}
+		
 	}
 
 	/**
@@ -111,8 +144,21 @@ public class CollectionSchema implements java.io.Serializable {
 	 *             if the specified attribute index is invalid
 	 */
 	public String attributeName(int[] attributeIndex) throws InvalidAttributeIndexException {
-		// TODO complete this method
-		return null;
+		if (index2name.get(attributeIndex[0]) == null){
+			throw new InvalidAttributeIndexException();
+		}	
+
+		if (attributeIndex.length > 1){
+			// recursively concatonates all sub attributes
+			String name = index2name.get(attributeIndex[0])
+			.concat(".")
+			.concat(index2schema.get(attributeIndex[0]).attributeName(Arrays.copyOfRange(attributeIndex, 1, attributeIndex.length)));
+			
+			return name;
+			
+		}else{
+			return index2name.get(attributeIndex[0]);
+		}
 	}
 
 }
