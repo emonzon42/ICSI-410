@@ -112,7 +112,7 @@ public class Tuple implements java.io.Serializable {
 	public void setAttribute(int attributeIndex, Object o) throws TypeException {
 		//System.err.println(o.getClass() + " | " + schema.attributeType(attributeIndex));
 		
-		if(o.getClass().equals(schema.attributeType(attributeIndex)))
+		if(o.getClass().equals(schema.attributeType(attributeIndex))) //if o's class is the same class as the class that should be in that index
 			attributeValues[attributeIndex] = o;
 		else
 			throw new TypeException();

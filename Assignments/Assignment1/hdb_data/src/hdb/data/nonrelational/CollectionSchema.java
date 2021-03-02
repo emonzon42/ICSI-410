@@ -98,8 +98,6 @@ public class CollectionSchema implements java.io.Serializable {
 	 * @return the index of the specified attribute in this {@code CollectionSchema}
 	 */
 	public int[] attributeIndex(String attributeName) {
-		if(attributeName.contains("."))
-			System.out.println(attributeName+" -> "+Arrays.toString(attributeName.split("\\.")));
 			
 		if (attributeName.contains(".") && name2index.get(attributeName.split("\\.")[0]) == null) {//creates attribute and subattributes
 			name2index.put(attributeName.split("\\.")[0], name2index.size());
