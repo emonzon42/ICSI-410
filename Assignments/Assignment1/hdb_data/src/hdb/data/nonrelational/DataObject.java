@@ -72,7 +72,7 @@ public class DataObject implements java.io.Serializable {
 	 *            the value of the attribute
 	 */
 	public void setAttribute(String attributeName, Object o) {
-		// TODO complete this method
+		index2value.put(schema.attributeIndex(attributeName)[0], o);
 	}
 
 	/**
@@ -83,8 +83,7 @@ public class DataObject implements java.io.Serializable {
 	 * @return the value of the specified attribute
 	 */
 	public Object attributeValue(int[] attributeIndex) {
-		// TODO complete this method
-		return null;
+		return index2value.get(attributeIndex[attributeIndex.length-1]);
 	}
 
 	/**
@@ -96,7 +95,9 @@ public class DataObject implements java.io.Serializable {
 	 *             if an IO error occurs
 	 */
 	public void writeAttributes(ObjectOutputStream out) throws IOException {
-		// TODO complete this method
+		for (int i = 0; i < index2value.size(); i++) {
+			out.writeObject(index2value.get(i));
+		}
 	}
 
 	/**
@@ -115,7 +116,12 @@ public class DataObject implements java.io.Serializable {
 	 */
 	public DataObject(CollectionSchema schema, ObjectInputStream in)
 			throws IOException, ClassNotFoundException, InvalidAttributeIndexException {
-		// TODO complete this method
+		this(schema);
+
+		for (int i = 0; i < schema.index2name.size(); i++){
+			setAttribute(schema.attributeName(i), in.readObject());
+		}
+			
 	}
 
 }
