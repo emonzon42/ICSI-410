@@ -6,8 +6,10 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="src" path="src"/>
+	<classpathentry exported="true" kind="con" path="Assignments/Assignment1/hdb_data"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/hdb_data"/>
 	<classpathentry kind="src" path="test"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/5"/>
+	<classpathentry exported="true" kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/5"/>
+	<classpathentry excluding="src/|hdb_data/|test/" kind="src" path=""/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
