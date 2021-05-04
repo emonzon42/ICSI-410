@@ -39,25 +39,27 @@ public class TupleArrayReader extends Operator {
 	}
 
 	@Override
-	public RelationSchema outputSchema() {
+	public RelationSchema outputSchema() { // returns the output schema of the operator.
 		return schema;
 	}
 
 	@Override
-	public boolean hasNext() {
-		// TODO complete this method (10 points)
+	public boolean hasNext() { //determines whether or not the operator has the next outputTuple.
+		if (currentIndex < input.length)
+			return true;
 		return false;
 	}
 
 	@Override
-	public Tuple next() {
-		// TODO complete this method (10 points)
-		return null;
+	public Tuple next() { //returns the next outputTuple.
+		Tuple next = input[currentIndex];
+		currentIndex++;
+		return next;
 	}
 
 	@Override
-	public void rewind() {
-		// TODO complete this method (10 points)
+	public void rewind() { //rewinds the operator in order to retrieve all of the outputTuples again.
+		currentIndex = 0;
 	}
 
 }
