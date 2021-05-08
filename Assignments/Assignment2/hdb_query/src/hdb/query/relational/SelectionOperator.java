@@ -24,6 +24,16 @@ public class SelectionOperator extends UnaryOperator {
 	protected String predicate;
 
 	/**
+	 * The current index of this {@code SelectionOperator}.
+	 */
+	protected int index;
+
+	/**
+	 * The index indicating where the last {@code Tuple} satisfying the predicate lies, in this {@code SelectionOperator}.
+	 */
+	protected int lastIndex;
+
+	/**
 	 * Constructs a {@code SelectionOperator}.
 	 * 
 	 * @param input
@@ -39,8 +49,17 @@ public class SelectionOperator extends UnaryOperator {
 	public SelectionOperator(Operator input, String predicate) throws ParsingException, UnboundVariableException {
 		super(input);
 		this.predicate = predicate;
-		evaluator = new ExpressionEvaluator(new LogicalExpression(predicate), input.outputSchema());
-		// TODO complete this method (10 points)
+		evaluator = new ExpressionEvaluator(new LogicalExpression(predicate), inputSchema());
+		
+		// goes through and finds last index that satisfies predicate
+		while (input.hasNext()) {
+			Tuple t = input.next();
+			index++;
+			if (evaluator.evaluate(t) == Boolean.TRUE){
+				lastIndex = index;
+			}
+		}
+		rewind();
 	}
 
 	/**
@@ -59,8 +78,7 @@ public class SelectionOperator extends UnaryOperator {
 	 */
 	@Override
 	public RelationSchema outputSchema() {
-		// TODO complete this method (10 points)
-		return null;
+		return inputSchema();
 	}
 
 	/**
@@ -70,8 +88,7 @@ public class SelectionOperator extends UnaryOperator {
 	 */
 	@Override
 	public boolean hasNext() {
-		// TODO complete this method (10 points)
-		return false;
+		return index < lastIndex ? true : false;
 	}
 
 	/**
@@ -81,7 +98,17 @@ public class SelectionOperator extends UnaryOperator {
 	 */
 	@Override
 	public Tuple next() {
-		// TODO complete this method (10 points)
+		while (hasNext()) {
+			Tuple t = input.next();
+			index++;
+			try {
+				if (evaluator.evaluate(t) == Boolean.TRUE){
+					return t;
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
 		return null;
 	}
 
@@ -90,7 +117,8 @@ public class SelectionOperator extends UnaryOperator {
 	 */
 	@Override
 	public void rewind() {
-		// TODO complete this method (10 points)
+		index = 0;
+		input.rewind();
 	}
 
 }
