@@ -24,7 +24,7 @@ public class SelectionOperator extends UnaryOperator {
 	protected String predicate;
 
 	/**
-	 * The current index of this {@code SelectionOperator}.
+	 * The current index of this {@code SelectionOperator}. (used for keeping track of distance to lastIndex)
 	 */
 	protected int index;
 
