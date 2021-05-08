@@ -72,6 +72,15 @@ public class DataObject implements java.io.Serializable {
 	 *            the value of the attribute
 	 */
 	public void setAttribute(String attributeName, Object o) {
+		if(attributeName.length() > 1 && attributeName.contains(".")){ //new subattribute  w/ no schema
+			CollectionSchema sub = new CollectionSchema();
+			sub.attributeIndex(attributeName.split("\\.")[1]);
+
+			index2value.put(schema.attributeIndex(attributeName)[0], new DataObject(sub));
+			 index2value.get(schema.attributeIndex(attributeName)[0]);
+			
+		}
+
 		index2value.put(schema.attributeIndex(attributeName)[0], o);
 	}
 
@@ -83,6 +92,10 @@ public class DataObject implements java.io.Serializable {
 	 * @return the value of the specified attribute
 	 */
 	public Object attributeValue(int[] attributeIndex) {
+		if (attributeIndex.length > 1) {
+			
+		}
+
 		return index2value.get(attributeIndex[attributeIndex.length-1]);
 	}
 
