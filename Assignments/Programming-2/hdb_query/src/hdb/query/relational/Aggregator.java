@@ -13,6 +13,13 @@ import hdb.data.relational.Tuple;
  */
 public class Aggregator {
 
+
+	private Operator input;
+	private RelationSchema schema;
+	private String[] groupingAttributeNames;
+	private Class<?>[] aggregateFunctionTypes;
+	private String[] aggregationAttributeNames;
+	
 	/**
 	 * Constructs an {@code Aggregator}.
 	 * 
@@ -30,6 +37,13 @@ public class Aggregator {
 	public Aggregator(Operator input, RelationSchema outputSchema, String[] groupingAttributeNames,
 			Class<?>[] aggregateFunctionTypes, String[] aggregationAttributeNames) {
 		// TODO complete this method (5 points)
+		this.input = input;
+		this.schema = outputSchema;
+		this.groupingAttributeNames = groupingAttributeNames;
+		this.aggregateFunctionTypes = aggregateFunctionTypes;
+		this.aggregationAttributeNames = aggregationAttributeNames;
+
+		
 	}
 
 	/**
