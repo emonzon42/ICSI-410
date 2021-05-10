@@ -8,8 +8,9 @@ import hdb.data.relational.RelationSchema;
 import hdb.data.relational.Tuple;
 
 /**
- * An {@code AggregageOperator} groups {@code Tuple}s and computes, for each group of {@code Tuple}s, a {@code Tuple}
- * representing that group of {@code Tuple}s.
+ * An {@code AggregageOperator} groups {@code Tuple}s and computes, for each
+ * group of {@code Tuple}s, a {@code Tuple} representing that group of
+ * {@code Tuple}s.
  * 
  * @author Jeong-Hyon Hwang (jhh@cs.albany.edu)
  */
@@ -26,7 +27,8 @@ public class AggregageOperator extends UnaryOperator {
 	protected Aggregator aggregator;
 
 	/**
-	 * An {@code Iterator} from the {@code Aggregator} used by this {@code AggregageOperator}.
+	 * An {@code Iterator} from the {@code Aggregator} used by this
+	 * {@code AggregageOperator}.
 	 */
 	protected Iterator<Tuple> i;
 
@@ -36,28 +38,29 @@ public class AggregageOperator extends UnaryOperator {
 	private RelationSchema outputSchema;
 
 	/**
-	 * The types of the {@code AggregateFunction}s used by this {@code AggregageOperator}.
+	 * The types of the {@code AggregateFunction}s used by this
+	 * {@code AggregageOperator}.
 	 */
 	private Class<?>[] aggregateFunctionTypes;
 
 	/**
-	 * The names of the attributes used by the {@code AggregateFunction}s of this {@code AggregageOperator}.
+	 * The names of the attributes used by the {@code AggregateFunction}s of this
+	 * {@code AggregageOperator}.
 	 */
 	private String[] aggregationAttributeNames;
 
 	/**
 	 * Constructs an {@code AggregageOperator}.
 	 * 
-	 * @param input
-	 *            the input {@code Operator} for this {@code AggregageOperator}
-	 * @param groupingAttributeNames
-	 *            the names of grouping attributes
-	 * @param aggregateFunctionTypes
-	 *            the types of the {@code AggregateFunction}s used by the {@code AggregageOperator}
-	 * @param aggregationAttributeNames
-	 *            the names of the attributes used by the {@code AggregateFunction}s
-	 * @throws InstantiationException
-	 *             if the specified {@code AggregateFunction}s cannot be instantiated
+	 * @param input                     the input {@code Operator} for this
+	 *                                  {@code AggregageOperator}
+	 * @param groupingAttributeNames    the names of grouping attributes
+	 * @param aggregateFunctionTypes    the types of the {@code AggregateFunction}s
+	 *                                  used by the {@code AggregageOperator}
+	 * @param aggregationAttributeNames the names of the attributes used by the
+	 *                                  {@code AggregateFunction}s
+	 * @throws InstantiationException if the specified {@code AggregateFunction}s
+	 *                                cannot be instantiated
 	 */
 	public AggregageOperator(Operator input, String[] groupingAttributeNames, Class<?>[] aggregateFunctionTypes,
 			String[] aggregationAttributeNames) throws InstantiationException {
@@ -73,16 +76,21 @@ public class AggregageOperator extends UnaryOperator {
 	/**
 	 * Constructs the output schema of this {@code AggregageOperator}.
 	 * 
-	 * @param aggregateFunctions
-	 *            {@code AggregateFunction}s
+	 * @param aggregateFunctions {@code AggregateFunction}s
 	 * @return the output schema of this {@code AggregageOperator}
 	 */
 	RelationSchema createOutputSchema(AggregateFunction[] aggregateFunctions) {
 		String[] attributeNames = new String[groupingAttributeNames.length + aggregateFunctions.length];
 		Class<?>[] attributeTypes = new Class<?>[groupingAttributeNames.length + aggregateFunctions.length];
-//		RelationSchema inputSchema = inputSchema();
-		// TODO complete this method (5 points) using this.groupingAttributeNames, this.aggregateFunctions, and
-		// inputSchema
+		for (int i = 0; i < groupingAttributeNames.length; i++) {
+			attributeNames[i] = groupingAttributeNames[i];
+			attributeTypes[i] = inputSchema().attributeType(inputSchema().attributeIndex(groupingAttributeNames[i]));
+		}
+		for (int i = 0; i < aggregateFunctions.length; i++) {
+			attributeNames[i + groupingAttributeNames.length] = aggregateFunctions[i].toString();
+			attributeTypes[i + groupingAttributeNames.length] = aggregateFunctions[i].valueType();
+		}
+
 		try {
 			return new RelationSchema(attributeNames, attributeTypes);
 		} catch (Exception e) {
@@ -92,20 +100,23 @@ public class AggregageOperator extends UnaryOperator {
 	}
 
 	/**
-	 * Returns the names of grouping attributes used by this {@code AggregageOperator}.
+	 * Returns the names of grouping attributes used by this
+	 * {@code AggregageOperator}.
 	 * 
-	 * @return the names of grouping attributes used by this {@code AggregageOperator}
+	 * @return the names of grouping attributes used by this
+	 *         {@code AggregageOperator}
 	 */
 	public String[] groupingAttributeNames() {
 		return groupingAttributeNames;
 	}
 
 	/**
-	 * Returns the {@code AggregateFunction}s used by this {@code AggregageOperator}.
+	 * Returns the {@code AggregateFunction}s used by this
+	 * {@code AggregageOperator}.
 	 * 
 	 * @return {@code AggregateFunction}s used by this {@code AggregageOperator}
-	 * @throws InstantiationException
-	 *             if the {@code AggreateFunction}s cannot be constructed properly
+	 * @throws InstantiationException if the {@code AggreateFunction}s cannot be
+	 *                                constructed properly
 	 */
 	public AggregateFunction[] aggregateFunctions() throws InstantiationException {
 		return createAggreateFunctions(input.outputSchema(), aggregateFunctionTypes, aggregationAttributeNames);
@@ -122,9 +133,11 @@ public class AggregageOperator extends UnaryOperator {
 	}
 
 	/**
-	 * Determines whether or not this {@code AggregageOperator} has the next output {@code Tuple}.
+	 * Determines whether or not this {@code AggregageOperator} has the next output
+	 * {@code Tuple}.
 	 * 
-	 * @return {@code true} if this {@code AggregageOperator} has the next output {@code Tuple}; {@code false} otherwise
+	 * @return {@code true} if this {@code AggregageOperator} has the next output
+	 *         {@code Tuple}; {@code false} otherwise
 	 */
 	@Override
 	public boolean hasNext() {
@@ -167,15 +180,14 @@ public class AggregageOperator extends UnaryOperator {
 	/**
 	 * Constructs {@code AggreateFunction}s.
 	 * 
-	 * @param schema
-	 *            a {@code RelationSchema}
-	 * @param aggregateFunctions
-	 *            the types of the {@code AggreateFunction}s to create
-	 * @param aggregationAttributeNames
-	 *            the names of the attributes that the {@code AggreateFunction}s will use
+	 * @param schema                    a {@code RelationSchema}
+	 * @param aggregateFunctions        the types of the {@code AggreateFunction}s
+	 *                                  to create
+	 * @param aggregationAttributeNames the names of the attributes that the
+	 *                                  {@code AggreateFunction}s will use
 	 * @return an array of {@code AggreateFunction}s that are created
-	 * @throws InstantiationException
-	 *             if the {@code AggreateFunction}s cannot be constructed properly
+	 * @throws InstantiationException if the {@code AggreateFunction}s cannot be
+	 *                                constructed properly
 	 */
 	public static AggregateFunction[] createAggreateFunctions(RelationSchema schema, Class<?>[] aggregateFunctions,
 			String[] aggregationAttributeNames) throws InstantiationException {
